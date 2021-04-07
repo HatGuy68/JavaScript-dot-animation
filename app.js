@@ -13,12 +13,36 @@ var mouse = {
     radius: (canvas.height/100) * (canvas.width/100)
 };
 
+// Event listener for mouse movement
+
 window.addEventListener('mousemove',
     function(event) {
         mouse.x = event.x;
         mouse.y = event.y;
     }
 )
+
+// Event listener for when mouse is not on the screen
+
+window.addEventListener('mouseout', 
+    function () {
+        mouse.x = undefined;
+        mouse.y = undefined;
+    }
+)
+
+// Event listener for resizing the canvas elements w.r.t. screen uppon change
+
+window.addEventListener('resize',
+    function() {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        mouse.radius = (canvas.height/100) * (canvas.width/100);
+        init();
+    }
+)
+
+// Properties of each canvas elements
 
 class Particle {
     constructor(x, y, directionX, directionY, size, color) {
@@ -38,6 +62,8 @@ class Particle {
     }
 
     update() {
+
+        // reverse direction upon collision with the screen borders
         if (this.x > canvas.width || this.x < 0) {
             this.directionX = -this.directionX;
         }
@@ -45,6 +71,7 @@ class Particle {
             this.directionY = -this.directionY;
         }
 
+        // create distance from the mouse pointer with buffer of 10 units
         let dx = mouse.x - this.x;
         let dy = mouse.y - this.y;
         let distance = Math.sqrt(dx*dx + dy*dy);
@@ -68,13 +95,13 @@ class Particle {
     }
 }
 
-function init() {
+function init() {           // initializer
     particlesArray = [];
     let numberOfParticles = (canvas.width * canvas.height) / 9000;
     for (let i = 0; i < numberOfParticles; i++) {
         let size = (Math.random() * 5) + 1;
-        let x = (Math.random() + ((innerWidth - size * 2) - (size * 2)) + size * 2)
-        let y = (Math.random() + ((innerHeight - size * 2) - (size * 2)) + size * 2)
+        let x = (Math.random() + ((innerWidth - size * 2) - (size * 2)) + size * 2);         //no clue
+        let y = (Math.random() + ((innerHeight - size * 2) - (size * 2)) + size * 2);
         let directionX = (Math.random() * 5) - 2.5;
         let directionY = (Math.random() * 5) - 2.5;
         let color = '#8C5523';
@@ -85,7 +112,7 @@ function init() {
 }
 
 function animate() {
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animate);             // API call to tell browser about the animation; Mostly recursive callback
     ctx.clearRect(0,0,innerWidth,innerHeight);
     
     for (let i = 0; i < particlesArray.length; i++) {
@@ -94,6 +121,7 @@ function animate() {
     connect();
 }
 
+// join the dots when they are at a certain distance apart
 function connect() {
     let opacityValue = 1;
     for (let a = 0; a < particlesArray.length; a++ ) {
@@ -112,29 +140,6 @@ function connect() {
     }
 }
 
-window.addEventListener('resize',
-    function() {
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
-        mouse.radius = (canvas.height/100) * (canvas.width/100);
-        init();
-    }
-)
-
-window.addEventListener('mouseout', 
-    function () {
-        mouse.x = undefined;
-        mouse.y = undefined;
-    }
-)
 
 init();
 animate();
-
-
-
-
-
-
-
-
